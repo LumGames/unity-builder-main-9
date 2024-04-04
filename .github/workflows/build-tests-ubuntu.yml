@@ -36,7 +36,7 @@ env:
 
 jobs:
   buildForAllPlatformsUbuntu:
-    name: ${{ matrix.targetPlatform }} on ${{ matrix.unityVersion }}
+    name: ${{ matrix.targetPlatform }} ${{ matrix.unityVersion }} ${{ matrix.buildWithIl2cpp }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -127,7 +127,7 @@ jobs:
       #          Build          #
       ###########################
       - name: Build
-        uses: ./
+        uses: game-ci/unity-builder@v4
         id: build-1
         continue-on-error: true
         env:
@@ -148,7 +148,7 @@ jobs:
           sleep 60
 
       - name: Build (Retry 1)
-        uses: ./
+        uses: game-ci/unity-builder@v4
         id: build-2
         if: ${{ steps.build-1.outcome == 'failure' }}
         continue-on-error: true
@@ -170,7 +170,7 @@ jobs:
           sleep 240
 
       - name: Build (Retry 2)
-        uses: ./
+        uses: game-ci/unity-builder@v4
         id: build-3
         if: ${{ steps.build-2.outcome == 'failure' }}
         env:
@@ -191,7 +191,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name:
-            'Build ${{ matrix.targetPlatform }} on Ubuntu (${{ matrix.unityVersion }}_il2cpp_${{ matrix.buildWithIl2cpp
-            }}_params_${{ matrix.additionalParameters }})'
+            'Build ${{ matrix.targetPlatform }} on Ubuntu (${{ matrix.unityVersion }}_il2cpp_${{ matrix.buildWithIl2cpp }}_params_${{ matrix.additionalParameters }})'
           path: build
           retention-days: 14
